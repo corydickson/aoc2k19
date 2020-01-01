@@ -1,51 +1,44 @@
-/*
- * --- Day 1: The Tyranny of the Rocket Equation ---
- * Santa has become stranded at the edge of the Solar System while delivering presents to other planets! To accurately calculate his position in space, safely align his warp drive,
- * and return to Earth in time to save Christmas, he needs you to bring him measurements from fifty stars.
- * Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first.
- * Each puzzle grants one star. Good luck!
- *
- * The Elves quickly load you into a spacecraft and prepare to launch.
- *
- * At the first Go / No Go poll, every Elf is Go until the Fuel Counter-Upper. They haven't determined the amount of fuel required yet.
- * Fuel required to launch a given module is based on its mass. Specifically, to find the fuel required for a module, take its mass, divide by three, round down, and subtract 2.
- *
- * For example:
- *
- * For a mass of 12, divide by 3 and round down to get 4, then subtract 2 to get 2.
- * For a mass of 14, dividing by 3 and rounding down still yields 4, so the fuel required is also 2.
- * For a mass of 1969, the fuel required is 654.
- * For a mass of 100756, the fuel required is 33583.
- *
- * fuel_req = floor(m / 3) - 2;
- *
- * The Fuel Counter-Upper needs to know the total fuel requirement. To find it, individually calculate the fuel needed for the mass of each module (your puzzle input), then add
- * together all the fuel values.
- * What is the sum of the fuel requirements for all of the modules on your spacecraft?
- */
-
 use std::io::{self, BufReader};
 use std::io::prelude::*;
 use std::fs::File;
 
-fn calculate_fuel_req(mass: u32) -> i32 {
-    let div = (mass / 3) as f32;
-    return (div.floor() - 2.0) as i32;
-}
+mod lib;
 
 fn main() -> io::Result<()> {
     let f = File::open("input.txt")?;
-    let f = BufReader::new(f);
 
-    let mut sum: i32 = 0;
-    for line in f.lines() {
-        let m = line.unwrap().parse::<u32>().unwrap();
+    let mut input = String::new();
+    println!("Please enter a day to see the solution:");
 
-        let req = calculate_fuel_req(m);
-        sum += req;
-    }
+    io::stdin().read_line(&mut input)
+            .expect("Failed to read line");
+    input.pop();
 
-    println!("{}", sum);
+    let day = input.parse().unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {}", err);
+        return 0;
+    });
+
+    match day {
+        1 => {
+            let r = BufReader::new(f);
+            let mut sum: i32 = 0;
+            for line in r.lines() {
+                let m = line.unwrap().parse::<u32>().unwrap();
+
+                let req = lib::calculate_fuel_req(m);
+                sum += req;
+            }
+            println!("Solution: {}", sum);
+        },
+        2 => {
+            // Pt1.
+            let mut puzzle = vec![1,12,2,3,1,1,2,3,1,3,4,3,1,5,0,3,2,1,10,19,2,9,19,23,1,9,23,27,2,27,9,31,1,31,5,35,2,35,9,39,1,39,10,43,2,43,13,47,1,47,6,51,2,51,10,55,1,9,55,59,2,6,59,63,1,63,6,67,1,67,10,71,1,71,10,75,2,9,75,79,1,5,79,83,2,9,83,87,1,87,9,91,2,91,13,95,1,95,9,99,1,99,6,103,2,103,6,107,1,107,5,111,1,13,111,115,2,115,6,119,1,119,5,123,1,2,123,127,1,6,127,0,99,2,14,0,0];
+            lib::read_program(&mut puzzle);
+            println!("Solution: {}", puzzle[0]);
+        }
+        _ => println!("{}", input) }
+
     Ok(())
 }
 
