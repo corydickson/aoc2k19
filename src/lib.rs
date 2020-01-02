@@ -3,51 +3,58 @@ pub fn calculate_fuel_req(mass: u32) -> i32 {
     return (div.floor() - 2.0) as i32;
 }
 
-pub fn read_program(instructions: &mut Vec<u128>) -> () {
-    let opcode_length: usize = 4;
+pub enum Opcodes {
+    Op1,
+    Op2,
+    Op99
+}
 
-    let mut idx: usize = 0;
+pub struct IntProgram{
+    pub mem: Vec<u128>,
+    pub pointer: usize
+}
 
-    while idx < instructions.len() {
+impl IntProgram {
+    fn handle_op(&mut self, op: Opcodes) {
+        let rhs = self.mem[self.pointer+1] as usize;
+        let lhs = self.mem[self.pointer+2] as usize;
+        let loc = self.mem[self.pointer+3] as usize;
 
-        let opcode = instructions[idx];
+        let answer = match op {
+            Opcodes::Op1 => Some(self.mem[rhs] + self.mem[lhs]),
+            Opcodes::Op2 => Some(self.mem[rhs] * self.mem[lhs]),
+            Opcodes::Op99 => None
+        };
 
-        match opcode {
-            1 => {
-                let rhs = instructions[idx+1] as usize;
-                let lhs = instructions[idx+2] as usize;
-                let location = instructions[idx+3] as usize;
-
-                let answer = instructions[rhs] + instructions[lhs];
-
-                instructions[location] = answer;
-            },
-            2 => {
-                let rhs = instructions[idx+1] as usize;
-                let lhs = instructions[idx+2] as usize;
-                let location = instructions[idx+3] as usize;
-
-                let answer = instructions[rhs] * instructions[lhs];
-
-                instructions[location] = answer;
-            },
-            _ => ()
+        match answer {
+            Some(val) => { self.mem[loc] = val },
+            None => ()
         }
+    }
 
-        idx += opcode_length;
+    pub fn run(&mut self, init1: u128, init2: u128) {
+        let opcode_length: usize = 4;
+
+        while self.pointer < self.mem.len() {
+
+            let opcode = self.mem[self.pointer];
+            self.mem[1] = init1;
+            self.mem[2] = init2;
+
+            match opcode {
+                1 => {
+                    self.handle_op(Opcodes::Op1);
+                },
+                2 => {
+                    self.handle_op(Opcodes::Op2);
+                },
+                99 => {
+                    self.handle_op(Opcodes::Op99);
+                },
+                _ => ()
+            }
+
+            self.pointer += opcode_length;
+        }
     }
 }
-
-
-/*
-pub struct Program {
-    instructions: Vec<u32>
-}
-
-pub enum Opcodes {
-    OPCODE1,
-    OPCODE2
-}
-
-*/
-
