@@ -5,8 +5,6 @@ use std::fs::File;
 mod lib;
 
 fn main() -> io::Result<()> {
-    let f = File::open("input.txt")?;
-
     let mut input = String::new();
     println!("Please enter a day to see the solution:");
 
@@ -21,7 +19,8 @@ fn main() -> io::Result<()> {
 
     match day {
         1 => {
-            let r = BufReader::new(f);
+            let day1input = File::open("input1.txt")?;
+            let r = BufReader::new(day1input);
             let mut sum: i32 = 0;
             for line in r.lines() {
                 let m = line.unwrap().parse::<u32>().unwrap();
@@ -51,8 +50,40 @@ fn main() -> io::Result<()> {
                     }
                 }
             }
-        }
-        _ => println!("{}", input) }
+        },
+        3 => {
+            let day3input = File::open("input3.txt")?;
+            let r = BufReader::new(day3input);
+            let mut wires = Vec::new();
+            for line in r.lines() {
+                let input = line.unwrap().parse::<String>().unwrap();
+
+                let new_wire = lib::Wire {
+                    input: input,
+                    points: vec![(0,0)]
+                };
+
+                let segs = new_wire.thread();
+                wires.push(segs);
+            }
+
+            let wire_a = &wires[0];
+            let wire_b = &wires[1];
+
+            let v1: std::collections::HashSet<(i64,i64)> = wire_a.iter().cloned().collect();
+            let v2: std::collections::HashSet<(i64,i64)> = wire_b.iter().cloned().collect();
+
+            let mut ds = Vec::new();
+
+            for x in v1.intersection(&v2) {
+                ds.push(x.0.abs() + x.1.abs());
+            }
+
+            ds.sort();
+            println!("Solution: {}", ds[1]);
+        },
+        _ => println!("{}", input)
+    }
 
     Ok(())
 }
