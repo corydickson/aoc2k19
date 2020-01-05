@@ -74,13 +74,19 @@ fn main() -> io::Result<()> {
             let v2: std::collections::HashSet<(i64,i64)> = wire_b.iter().cloned().collect();
 
             let mut ds = Vec::new();
+            let mut min = Vec::new();
 
             for x in v1.intersection(&v2) {
-                ds.push(x.0.abs() + x.1.abs());
+                if *x != (0,0) {
+                    min.push(lib::get_distance(wire_a, *x) + lib::get_distance(wire_b, *x));
+                    ds.push(x.0.abs() + x.1.abs());
+                }
             }
 
+            min.sort();
             ds.sort();
-            println!("Solution: {}", ds[1]);
+            println!("Solution pt1: {}", ds[0]);
+            println!("Solution pt2: {}", min[0]);
         },
         _ => println!("{}", input)
     }

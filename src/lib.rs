@@ -3,6 +3,19 @@ pub fn calculate_fuel_req(mass: u32) -> i32 {
     return (div.floor() - 2.0) as i32;
 }
 
+pub fn get_distance(wire: &Vec<(i64,i64)>, int_point: (i64,i64)) -> i64 {
+    let idx = wire.iter().position(|&p| p == int_point).unwrap();
+    let slice = &wire[0..idx+1];
+    let mut last = &slice[0];
+    let mut d1 = 0;
+    for p in slice {
+        d1+= (p.0 - last.0).abs() + (p.1 - last.1).abs();
+        last = p;
+    }
+
+    return d1;
+}
+
 pub struct Wire {
     pub input: String,
     pub points: Vec<(i64,i64)>
