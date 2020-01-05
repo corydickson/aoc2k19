@@ -19,7 +19,7 @@ fn main() -> io::Result<()> {
 
     match day {
         1 => {
-            let day1input = File::open("input1.txt")?;
+            let day1input = File::open("puzzles/input1.txt")?;
             let r = BufReader::new(day1input);
             let mut sum: i32 = 0;
             for line in r.lines() {
@@ -52,7 +52,7 @@ fn main() -> io::Result<()> {
             }
         },
         3 => {
-            let day3input = File::open("input3.txt")?;
+            let day3input = File::open("puzzles/input3.txt")?;
             let r = BufReader::new(day3input);
             let mut wires = Vec::new();
             for line in r.lines() {
@@ -87,6 +87,46 @@ fn main() -> io::Result<()> {
             ds.sort();
             println!("Solution pt1: {}", ds[0]);
             println!("Solution pt2: {}", min[0]);
+        },
+        4 => {
+            /*
+             * - It is a six-digit number.
+             * - The value is within the range given in your puzzle input.
+             * - Two adjacent digits are the same (like 22 in 122345).
+             * - Going from left to right, the digits never decrease; they only ever increase or stay the same (like 111123 or 135679).
+             */
+            let max = 864247; // puzzle input
+            let min = 402328;
+
+            let mut num_pass = 0;
+
+            for password in min..max+1 {
+                let mut valid: Vec<u32> = Vec::new();
+                let _: Vec<_> = password.to_string().chars().map(
+                    |d| {
+                        let digit = d.to_digit(10).unwrap();
+
+                        if valid.len() == 0 {
+                            valid.push(digit)
+                        }
+
+                        else {
+                            if digit >= valid[valid.len() - 1] {
+                                valid.push(digit)
+                            }
+                        }
+                    }
+                ).collect();
+
+                if valid.len() == 6 {
+                    valid.dedup();
+                    if valid.len() < 6 {
+                        num_pass +=1;
+                    }
+                }
+            }
+
+            println!("Solution pt1 {}", num_pass);
         },
         _ => println!("{}", input)
     }
