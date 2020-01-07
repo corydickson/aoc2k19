@@ -89,44 +89,17 @@ fn main() -> io::Result<()> {
             println!("Solution pt2: {}", min[0]);
         },
         4 => {
-            /*
-             * - It is a six-digit number.
-             * - The value is within the range given in your puzzle input.
-             * - Two adjacent digits are the same (like 22 in 122345).
-             * - Going from left to right, the digits never decrease; they only ever increase or stay the same (like 111123 or 135679).
-             */
             let max = 864247; // puzzle input
             let min = 402328;
-
             let mut num_pass = 0;
 
-            for password in min..max+1 {
-                let mut valid: Vec<u32> = Vec::new();
-                let _: Vec<_> = password.to_string().chars().map(
-                    |d| {
-                        let digit = d.to_digit(10).unwrap();
-
-                        if valid.len() == 0 {
-                            valid.push(digit)
-                        }
-
-                        else {
-                            if digit >= valid[valid.len() - 1] {
-                                valid.push(digit)
-                            }
-                        }
-                    }
-                ).collect();
-
-                if valid.len() == 6 {
-                    valid.dedup();
-                    if valid.len() < 6 {
-                        num_pass +=1;
-                    }
+            for password in min..=max {
+                if lib::valid_password(password) {
+                    num_pass +=1;
                 }
             }
 
-            println!("Solution pt1 {}", num_pass);
+            println!("Solution pt2 {}", num_pass);
         },
         _ => println!("{}", input)
     }
@@ -140,9 +113,20 @@ mod tests {
 
     #[test]
     fn fuel_req() {
-        assert_eq!(calculate_fuel_req(12), 2);
-        assert_eq!(calculate_fuel_req(14), 2);
-        assert_eq!(calculate_fuel_req(1969), 654);
-        assert_eq!(calculate_fuel_req(100756), 33583);
+        assert_eq!(lib::calculate_fuel_req(12), 2);
+        assert_eq!(lib::calculate_fuel_req(14), 2);
+        assert_eq!(lib::calculate_fuel_req(1969), 654);
+        assert_eq!(lib::calculate_fuel_req(100756), 33583);
+    }
+
+    #[test]
+    fn password_check() {
+        assert_eq!(lib::valid_password(123444), false);
+        assert_eq!(lib::valid_password(124444), false);
+        assert_eq!(lib::valid_password(123444), false);
+        assert_eq!(lib::valid_password(111122), true);
+        assert_eq!(lib::valid_password(112233), true);
+        assert_eq!(lib::valid_password(113334), true);
+        assert_eq!(lib::valid_password(111334), true);
     }
 }

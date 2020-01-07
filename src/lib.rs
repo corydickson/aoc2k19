@@ -1,3 +1,38 @@
+pub fn valid_password(attempt: u32) -> bool {
+    let mut valid: Vec<u32> = Vec::new();
+    let _: Vec<_> = attempt.to_string().chars().map(
+        |d| {
+            let digit = d.to_digit(10).unwrap();
+
+            if valid.len() == 0 {
+                valid.push(digit)
+            }
+
+            else {
+                if digit >= valid[valid.len() - 1] {
+                    valid.push(digit)
+                }
+            }
+        }
+    ).collect();
+
+    let mut only_pair: bool = false;
+    if valid.len() == 6 {
+        // Always increasing six digits
+        for d in &valid {
+            let count = valid.iter().filter(|&n| n == d ).count();
+            only_pair = count == 2;
+
+            if only_pair {
+                valid.dedup();
+                return valid.len() < 6;
+            }
+        }
+    }
+
+    return only_pair;
+}
+
 pub fn calculate_fuel_req(mass: u32) -> i32 {
     let div = (mass / 3) as f32;
     return (div.floor() - 2.0) as i32;
